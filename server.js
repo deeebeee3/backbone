@@ -37,6 +37,7 @@ var mongoose = require('mongoose');
 //blogroll db will be created when server.js run
 //use show dbs to list dbs, type quit() to quit.
 //db folder is in MacHD/data/db
+//type: use blogroll > show collections > db.blogs.find().pretty()
 mongoose.connect('mongodb://localhost/blogroll');
 
 var Schema = mongoose.Schema;
