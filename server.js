@@ -1,4 +1,5 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 // const MongoInMemory = require('mongo-in-memory');
  
@@ -53,21 +54,47 @@ mongoose.model('Blog', BlogSchema);
 
 var Blog = mongoose.model('Blog');
 
-var blog = new Blog({
-    author: 'Michael',
-    title: 'Michaels Blog',
-    url: 'http://google.co.uk'
-});
+// var blog = new Blog({
+//     author: 'Michael',
+//     title: 'Michaels Blog',
+//     url: 'http://google.co.uk'
+// });
 
-blog.save().then(function(x){
-    console.log(x)
-}).catch(function(e){
-    console.log(e)
-})
+// blog.save().then(function(x){
+//     console.log(x)
+// }).catch(function(e){
+//     console.log(e)
+// })
 
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
+
+//ROUTES
+app.get('/api/blogs', function(req, res){
+    Blog.find(function(err, docs){
+        docs.forEach(function(item){
+            console.log('Recieved a GET request for _id: ' + item._id);
+        });
+        res.send(docs);
+    });
+});
+
+app.post('/api/blogs', function(req, res){
+    // need to install bodyparser middleware
+
+    console.log('Recieved POST request');
+
+    for(var key in req.body){
+        console.log(key + ': ' + req.body[key]);
+    }
+
+    var blog = new Blog(req.body);
+    blog.save(function(err, doc){
+        res.send(doc);
+    });
+});
 
 var port = 3000;
 

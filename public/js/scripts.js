@@ -4,7 +4,8 @@ var Blog = Backbone.Model.extend({
         author: '',
         title: '',
         url: ''
-    }
+    },
+    url: 'http://localhost:3000/api/blogs'
 });
 
 var blog1 = new Blog({
@@ -20,7 +21,9 @@ var blog2 = new Blog({
 });
 
 // Backbone Collection
-var Blogs = Backbone.Collection.extend({});
+var Blogs = Backbone.Collection.extend({
+    url: 'http://localhost:3000/api/blogs'
+});
 
 // Add Models to Collection
 var blogs = new Blogs(/*[blog1, blog2]*/);
@@ -89,6 +92,20 @@ var BlogsView = Backbone.View.extend({
         this.model.on('add', this.render, this);
         this.model.on('change', this.render, this);
         this.model.on('remove', this.render, this);
+
+        //GET request - fetch from url to our api 'http://localhost:3000/api/blogs'
+        this.model.fetch({
+            success: function(response){
+                if(response){
+                    _.each(response, function(item){
+                        console.log('got blog with _id: ' + item._id);
+                    });
+                }
+            },
+            error: function(){
+                console.log('oops failed to get blogs!');
+            }
+        });
     },
 
     render: function(){
@@ -117,7 +134,18 @@ $(document).ready(function(){
         $('.title-input').val('');
         $('.url-input').val('');
 
-        console.log(blog.toJSON());
+
+
         blogs.add(blog);
+
+        // Make a POST request to 'http://localhost:3000/api/blogs'
+        blog.save(null, {
+            success: function(response){
+                console.log('successfully saved with _id: ' + response.toJSON()._id);
+            },
+            error: function(){
+                console.log('failed to save blog!');
+            }
+        })
     })
 });
