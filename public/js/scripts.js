@@ -1,3 +1,6 @@
+//Get backbone to use the _id (as saved in mongo) rather than its default id
+Backbone.Model.prototype.idAttribute = '_id';
+
 // Backbone Model
 var Blog = Backbone.Model.extend({
     defaults: {
@@ -64,6 +67,15 @@ var BlogView = Backbone.View.extend({
             'title': $('.title-update').val(),
             'url': $('.url-update').val()
         });
+
+        this.model.save(null, {
+            success:function(response){
+                console.log('successfully UPDATE blog with _id; ' + response.toJSON()._id);
+            },
+            error: function(e){
+                console.log('Failed to UPDATE blog: ' + e.toJSON());
+            }
+        })
     },
 
     cancel: function(){
@@ -72,7 +84,14 @@ var BlogView = Backbone.View.extend({
     },
 
     delete: function(){
-        this.model.destroy();
+        this.model.destroy({
+            success: function(response){
+                console.log('successfully DELETE blog with _id; ' + response.toJSON()._id);
+            },
+            error: function(){
+                console.log('Failed to DELETE blog!');
+            }
+        });
     },
 
     render: function(){
@@ -97,8 +116,8 @@ var BlogsView = Backbone.View.extend({
         this.model.fetch({
             success: function(response){
                 if(response){
-                    _.each(response, function(item){
-                        console.log('got blog with _id: ' + item._id);
+                    _.each(response._byId, function(item){
+                        console.log('got blog with _id: ' + item.id);
                     });
                 }
             },
